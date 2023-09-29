@@ -1,6 +1,12 @@
 const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 4000;
+const mongoose = require('mongoose');
+//user model
+const User = require('./User')
+// connect to the datbase
+mongoose.connect('mongodb://localhost/testdb')
+                
 
 //This tells Express to serve any files from the 'public' folder. 
 app.use(express.static('public'));
