@@ -12,7 +12,7 @@ const cookieParser = require("cookie-parser");
 LocalStrategy = require("passport-local");
 passportLocalMongoose = require("passport-local-mongoose");
 // import user from user.js model
-const User = require("./models/user.js");
+const User = require("./model/user.js");
 // url connection to db  from .env
 const url = process.env.MONGOLAB_URI;
 
