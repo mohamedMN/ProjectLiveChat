@@ -3,16 +3,18 @@ const app = express();
 //Load Environment Variables
 require("dotenv").config();
 const mongoose = require("mongoose");
-// import passportJS midlware
-passport = require("passport");
 // import body-parser for validation
 bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
-//import for local authentification
-LocalStrategy = require("passport-local");
-passportLocalMongoose = require("passport-local-mongoose");
 // import user from user.js model
 const User = require("./model/user.js");
+const bcrypt = require("bcrypt");
+// import passportJS midlware
+const passport = require("passport");
+// import passport Js login local strategy
+const LocalStrategy = require("passport-local").Strategy;
+var session = require("express-session");
+
 // url connection to db  from .env
 const url = process.env.MONGOLAB_URI;
 
@@ -43,8 +45,9 @@ app.use(cookieParser());
 
 // initiale the passportJS
 app.use(passport.initialize());
-// initiale the session
 app.use(passport.session());
+
+// passport.use(new LocalStrategy({ usernameField: "username" }, LocalStrategy));
 
 // define localStartegie for sign up
 passport.use(new LocalStrategy(User.authenticate()));
@@ -87,25 +90,31 @@ app.get("/dashboard", (req, res) => {
   res.render("dashboard");
 });
 //Handling user login
-app.post("/login", async (req, res) => {
-  try {
-    // check if the user exists
-    const user = await User.findOne({ username: req.body.username });
-    if (user) {
-      //check if password matches
-      const result = req.body.password === user.password;
-      if (result) {
-        res.render("dashboard");
-      } else {
-        res.status(400).json({ error: "password doesn't match" });
+passport.use(
+    ((username, password, done) => {
+    console.log(username + "," + password);
+    User.findOne({ username: username }, (err, user) => {
+      if (err) {
+        return done(err);
       }
-    } else {
-      res.status(400).json({ error: "User doesn't exist" });
-    }
-  } catch (error) {
-    res.status(400).json({ error });
-  }
-});
+      if (!user) {
+        return done(null, false, { message: "Incorrect username." });
+      }
+      if (!user.validatePassword(password)) {
+        return done(null, false, { message: "Incorrect password." });
+      }
+      return done(null, user);
+    });
+  })
+);
+
+app.post(
+  "/login",
+  passport.authenticate("local", {
+    successRedirect: "/dashboard",
+    failureRedirect: "/login",
+  })
+);
 // handling register form
 app.post("/register", async (req, res) => {
   const pass = req.body.password;
@@ -122,7 +131,10 @@ app.post("/register", async (req, res) => {
       password: password,
       email: req.body.email,
     });
+
+    console.log(user);
     await user.save();
+    res.render("login");
   } else {
     return res.status(404).json({ message: "no matching in password" });
   }
