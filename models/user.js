@@ -21,21 +21,13 @@ const userSchema = new Schema({
   },
 });
 // Custom method to validate a user's password
-userSchema.methods.validatePassword = function (candidatePassword, callback) {
-  bcrypt.compare(candidatePassword, this.password, (err, isMatch) => {
-    if (err) return callback(err);
-    callback(null, isMatch);
-  });
-};
-passport.serializeUser((user, done) => {
-  done(null, user.id);
-});
+// userSchema.methods.validatePassword = function (candidatePassword, callback) {
+//   bcrypt.compare(candidatePassword, this.password, (err, isMatch) => {
+//     if (err) return callback(err);
+//     callback(null, isMatch);
+//   });
+// };
 
-passport.deserializeUser((id, done) => {
-  User.findById(id, (err, user) => {
-    done(err, user);
-  });
-});
 userSchema.plugin(passportLocalMongoose);
 
 const collection = mongoose.model("User", userSchema);
