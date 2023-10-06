@@ -1,20 +1,20 @@
 const express = require("express");
 const app = express();
-const routes = require('./routes/route')
+const routes = require("./routes/route");
 const mongoose = require("mongoose");
-const passport=require('passport')
-const user = require ('./models/user')
-
+const passport = require("passport");
+const user = require("./models/user");
+const middleware = require("./middleware/middlware");
 //Load Environment Variables
 require("dotenv").config();
 //This tells Express to serve any files from the 'public' folder.
 app.use(express.static("public"));
 // Définir le moteur de vues EJS
 app.set("view engine", "ejs");
-// Définir le répertoire des vues
+// Définir la répertoire des vues
 app.set("views", "./views");
 // call the routes in route folder
-app.use(routes);
+app.use(middleware, routes);
 // url connection to db  from .env
 const url = process.env.MONGOLAB_URI;
 //connection function

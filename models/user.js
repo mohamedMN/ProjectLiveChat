@@ -20,13 +20,6 @@ const userSchema = new Schema({
     required: true,
   },
 });
-// Custom method to validate a user's password
-// userSchema.methods.validatePassword = function (candidatePassword, callback) {
-//   bcrypt.compare(candidatePassword, this.password, (err, isMatch) => {
-//     if (err) return callback(err);
-//     callback(null, isMatch);
-//   });
-// };
 
 userSchema.plugin(passportLocalMongoose);
 

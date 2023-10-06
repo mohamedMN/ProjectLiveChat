@@ -1,47 +1,50 @@
-const app = require("express")();
-const passport=require('passport')
-const session = require('express-session')
-const LocalStrategy = require('passport-local').Strategy
-const User = require ('../models/user')
-const bcrypt = require('bcrypt');
-
-// import body-parser for validation
-bodyParser = require("body-parser")
-//start cockie
-app.use(cookieParser());
+const middleware = require("express")();
+const passport = require("passport");
+const session = require("express-session");
+const LocalStrategy = require("passport-local").Strategy;
+const User = require("../models/user");
+const bcrypt = require("bcrypt");
+const cookieParser = require("cookie-parser"); // Require cookie-parser
 // initiale the passportJS
-app.use(session({
-  secret: "secret",
-  resave: false ,
-  saveUninitialized: true ,
-}))
+middleware.use(
+  session({
+    secret: "secret",
+    resave: false,
+    saveUninitialized: true,
+  })
+);
+middleware.use(passport.initialize());
+middleware.use(passport.session());
+// import body-parser for validation
+bodyParser = require("body-parser");
+//start cockie
+middleware.use(cookieParser());
+
 // Configure body-parser middleware
-app.use(bodyParser.urlencoded({ extended: true }));
+middleware.use(bodyParser.urlencoded({ extended: true }));
 
+// printData = (req, res, next) => {
+//   console.log("\n==============================");
+//   console.log(`------------>  ${count++}`);
 
+//   console.log(`req.body.username -------> ${req.body.username}`);
+//   console.log(`req.body.password -------> ${req.body.password}`);
 
+//   console.log(`\n req.session.passport -------> `);
+//   console.log(req.session.passport);
 
-printData = (req, res, next) => {
-  console.log("\n==============================")
-  console.log(`------------>  ${count++}`)
+//   console.log(`\n req.user -------> `);
+//   console.log(req.user);
 
-  console.log(`req.body.username -------> ${req.body.username}`) 
-  console.log(`req.body.password -------> ${req.body.password}`)
+//   console.log("\n Session and Cookie");
+//   console.log(`req.session.id -------> ${req.session.id}`);
+//   console.log(`req.session.cookie -------> `);
+//   console.log(req.session.cookie);
 
-  console.log(`\n req.session.passport -------> `)
-  console.log(req.session.passport)
+//   console.log("===========================================\n");
 
-  console.log(`\n req.user -------> `) 
-  console.log(req.user) 
+//   next();
+// };
 
-  console.log("\n Session and Cookie")
-  console.log(`req.session.id -------> ${req.session.id}`) 
-  console.log(`req.session.cookie -------> `) 
-  console.log(req.session.cookie) 
-
-  console.log("===========================================\n")
-
-  next()
-}
-
-app.use(printData)
+// app.use(printData)
+module.exports = middleware;
