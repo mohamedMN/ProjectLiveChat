@@ -7,6 +7,7 @@ const User = require("../models/user");
 const bcrypt = require("bcrypt");
 
 const authUser = async (username, password, done) => {
+  console.log(username +"     psw : "+password)
   const data = await User.findOne({ username: username });
   if (!data)
     return done(null, false, {
@@ -22,7 +23,6 @@ const authUser = async (username, password, done) => {
   }
 };
 
-passport.use(new LocalStrategy(authUser));
 
 passport.serializeUser((userObj, done) => {
   done(null, userObj);

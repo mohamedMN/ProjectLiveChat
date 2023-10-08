@@ -11,6 +11,9 @@ const {register}= require("../controlles/controls");
 //=====================
 // the login page
 // if user already connected
+
+passport.use(new LocalStrategy(authUser));
+// to check if session of user is set
 checkLoggedIn = (req, res, next) => {
   if (req.isAuthenticated()) return res.redirect("/dashboard");
   next();
@@ -20,46 +23,44 @@ checkAuthenticated = (req, res, next) => {
   res.redirect("/login");
 };
 
-router.get(
-  "/login",
-  checkLoggedIn,
-  passport.authenticate("local", {
-    successRedirect: "login",
-    failureRedirect: "register",
-  })
-);
 
-passport.use(new LocalStrategy(authUser));
-// to check if session of user is set
+
 
 // to log out
-app.delete("/logout", (req, res) => {
-  req.logOut();
-  res.redirect("/login");
-  console.log(`-------> User Logged out`);
+router.post('/logout', function(req, res, next) {
+  req.logout(function(err) {
+    if (err) { return next(err); }
+    res.redirect('/');
+  });
 });
+
 
 // the main page
 router.get("/", checkAuthenticated, (req, res) => {
-  res.render("register");
+  res.render("login");
 });
-
+// the login page 
+router.get("/login",(req,res)=>{
+  res.render('login')
+} )
 // the register page
 router.get("/register", checkLoggedIn, (req, res) => {
   res.render("register");
 });
 
-// the layout page
-router.get("/layout", (req, res) => {
-  res.render("layout");
-});
+
 // the dashboard page
 router.get("/dashboard", checkAuthenticated, (req, res) => {
   res.render("dashboard");
 });
 
 //handle login
-router.post("/login", (req, res) => {});
+router.post("/login",  checkLoggedIn,
+passport.authenticate("local", {
+  successRedirect: "dashboard",
+  failureRedirect: "login",
+})
+);
 // handling register form
 router.post("/register", async (req, res) => {
   register(

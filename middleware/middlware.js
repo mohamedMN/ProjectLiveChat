@@ -19,6 +19,7 @@ middleware.use(passport.session());
 bodyParser = require("body-parser");
 //start cockie
 middleware.use(cookieParser());
+var count =0
 
 // Configure body-parser middleware
 middleware.use(bodyParser.urlencoded({ extended: true }));
@@ -46,5 +47,5 @@ middleware.use(bodyParser.urlencoded({ extended: true }));
 //   next();
 // };
 
-// app.use(printData)
+// middleware.use(printData)
 module.exports = middleware;
